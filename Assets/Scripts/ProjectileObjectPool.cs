@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class ProjectileObjectPool : MonoBehaviour
 {
+    public static ProjectileObjectPool instance;
+
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private int initialPoolSize = 10;
 
@@ -10,26 +12,51 @@ public class ProjectileObjectPool : MonoBehaviour
 
     private void Awake()
     {
-
+        // Singleton pattern
+        if (instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
     }
 
     private void Start()
     {
-
+        // Initialize the pool with inactive objects
+        for (int i = 0; i < initialPoolSize; i++)
+        {
+            CreateNewProjectile();
+        }
     }
 
-    private void CreateNewProjectile()
+    private GameObject CreateNewProjectile()
     {
-
+        GameObject newProjectile = Instantiate(projectilePrefab);
+        newProjectile.SetActive(false);
+        projectilePool.Add(newProjectile);
+        return newProjectile;
     }
 
     public GameObject Acquire()
     {
-        return null;
+        // If there are no objects in the pool, create a new one
+        if (projectilePool.Count == 0)
+        {
+            CreateNewProjectile();
+        }
+
+        // Get an object from the pool
+        GameObject projectile = projectilePool[0];
+        projectilePool.RemoveAt(0);
+        projectile.SetActive(true);
+
+        return projectile;
     }
 
     public void Return(GameObject projectile)
     {
-
+        projectile.SetActive(false);
+        projectilePool.Add(projectile);
     }
 }

@@ -9,9 +9,17 @@ public class PersistentObject : MonoBehaviour
     private string instancePrivateDebugText = "instance private";
     public string instancePublicDebugText = "instance public";
 
+    private static PersistentObject instance;
+
     void Awake()
     {
+        instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+
+    public static PersistentObject GetInstance()
+    {
+        return instance;
     }
 
     void Start()
